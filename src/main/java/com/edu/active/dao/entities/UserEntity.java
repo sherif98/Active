@@ -7,10 +7,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users")
-//@JsonIdentityInfo(
-//        generator = ObjectIdGenerators.PropertyGenerator.class,
-//        property = "id")
-public class User {
+
+public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
@@ -20,17 +18,14 @@ public class User {
     private String password;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private Set<Category> categoriesFollowing;
+    private Set<CategoryEntity> categoriesFollowing;
 
 
-    @JsonIgnore
     @OneToMany(mappedBy = "ownerUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Post> createdPosts;
+    private Set<PostEntity> createdPosts;
 
-    @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Post> likedPosts;
+    private Set<PostEntity> likedPosts;
 
 
     public long getId() {
@@ -57,38 +52,40 @@ public class User {
         this.password = password;
     }
 
-    public Set<Post> getCreatedPosts() {
+    @JsonIgnore
+    public Set<PostEntity> getCreatedPosts() {
         return createdPosts;
     }
 
-    public void setCreatedPosts(Set<Post> createdPosts) {
+    public void setCreatedPosts(Set<PostEntity> createdPosts) {
         this.createdPosts = createdPosts;
     }
 
-    public Set<Post> getLikedPosts() {
+    @JsonIgnore
+    public Set<PostEntity> getLikedPosts() {
         return likedPosts;
     }
 
-    public void setLikedPosts(Set<Post> likedPosts) {
+    public void setLikedPosts(Set<PostEntity> likedPosts) {
         this.likedPosts = likedPosts;
     }
 
-    //
-    public Set<Category> getCategoriesFollowing() {
+    @JsonIgnore
+    public Set<CategoryEntity> getCategoriesFollowing() {
         return categoriesFollowing;
     }
 
-    public void setCategoriesFollowing(Set<Category> categoriesFollowing) {
+    public void setCategoriesFollowing(Set<CategoryEntity> categoriesFollowing) {
         this.categoriesFollowing = categoriesFollowing;
     }
 
     @Override
     public String toString() {
-        return "User{" +
+        return "UserEntity{" +
                 "id=" + id +
                 ", userName='" + userName + '\'' +
                 ", password='" + password + '\'' +
-                ", categoriesFollowing=" + categoriesFollowing.stream().map(Category::getCategoryName) +
+                ", categoriesFollowing=" + categoriesFollowing.stream().map(CategoryEntity::getCategoryName) +
                 '}';
     }
 }

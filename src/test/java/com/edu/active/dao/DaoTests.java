@@ -2,8 +2,8 @@ package com.edu.active.dao;
 
 import com.edu.active.dao.api.PostsRepository;
 import com.edu.active.dao.api.UsersRepository;
-import com.edu.active.dao.entities.Post;
-import com.edu.active.dao.entities.User;
+import com.edu.active.dao.entities.PostEntity;
+import com.edu.active.dao.entities.UserEntity;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +25,13 @@ public class DaoTests {
 
     //    @Test
 //    public void test1() {
-//        User user = new User();
+//        UserEntity user = new UserEntity();
 //        user.setUserName("sherif");
 //        user.setPassword("12345");
 //        user.setLikedPosts(new HashSet<>());
 //
-//        Category category = new Category();
-//        Post post = createPost(user, category);
+//        CategoryEntity category = new CategoryEntity();
+//        PostEntity post = createPost(user, category);
 //
 //        category.setCategoryName("Programming");
 //        category.setPosts(new HashSet<>(Arrays.asList(post)));
@@ -44,8 +44,8 @@ public class DaoTests {
 //        usersRepository.save(user);
 //    }
 //
-//    private Post createPost(User user, Category category) {
-//        Post post = new Post();
+//    private PostEntity createPost(UserEntity user, CategoryEntity category) {
+//        PostEntity post = new PostEntity();
 //        post.setTitle("java");
 //        post.setContent("java is great");
 //        post.setOwnerUser(user);
@@ -54,11 +54,11 @@ public class DaoTests {
 //    }
     @Test
     public void test2() {
-        User user = new User();
+        UserEntity user = new UserEntity();
         user.setUserName("sherif");
         user.setPassword("12345");
 
-        Post post = new Post();
+        PostEntity post = new PostEntity();
         post.setTitle("java");
         post.setContent("java is great");
         post.setOwnerUser(user);

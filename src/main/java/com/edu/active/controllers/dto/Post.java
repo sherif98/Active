@@ -1,34 +1,20 @@
-package com.edu.active.dao.entities;
+package com.edu.active.controllers.dto;
 
-import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Set;
 
-@Entity
-@Table(name = "posts")
-//@JsonIdentityInfo(
-//        generator = ObjectIdGenerators.PropertyGenerator.class,
-//        property = "id")
-public class Post implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+class Post {
+
     private long id;
 
     private String title;
 
     private String content;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
     private Category category;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id")
     private User ownerUser;
 
-    @ManyToMany(mappedBy = "likedPosts", cascade = CascadeType.ALL)
     private Set<User> usersLikePost;
-
 
     public long getId() {
         return id;
@@ -76,16 +62,5 @@ public class Post implements Serializable {
 
     public void setUsersLikePost(Set<User> usersLikePost) {
         this.usersLikePost = usersLikePost;
-    }
-
-    @Override
-    public String toString() {
-        return "Post{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", content='" + content + '\'' +
-                ", category=" + category.getCategoryName() +
-                ", ownerUser=" + ownerUser.getId() +
-                '}';
     }
 }

@@ -7,7 +7,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "categories")
-public class Category {
+public class CategoryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
@@ -16,8 +16,7 @@ public class Category {
 
 
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonIgnore
-    private Set<Post> posts;
+    private Set<PostEntity> posts;
 
     public long getId() {
         return id;
@@ -35,20 +34,20 @@ public class Category {
         this.categoryName = categoryName;
     }
 
-    public Set<Post> getPosts() {
+    @JsonIgnore
+    public Set<PostEntity> getPosts() {
         return posts;
     }
 
-    public void setPosts(Set<Post> posts) {
+    public void setPosts(Set<PostEntity> posts) {
         this.posts = posts;
     }
 
     @Override
     public String toString() {
-        return "Category{" +
+        return "CategoryEntity{" +
                 "id=" + id +
                 ", categoryName='" + categoryName + '\'' +
-                ", posts=" + posts.stream().map(Post::getTitle) +
                 '}';
     }
 }
