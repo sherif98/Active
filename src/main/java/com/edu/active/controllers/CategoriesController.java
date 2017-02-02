@@ -28,6 +28,4 @@ public class CategoriesController {
     public Set<Post> getCategoryPosts(@PathVariable String categoryName) {
         return categoriesRepository.findCategoryByCategoryName(categoryName).getPosts();
     }
-
-
 }
