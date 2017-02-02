@@ -1,7 +1,5 @@
 package com.edu.active.dao.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
 import java.util.Set;
 
@@ -34,7 +32,6 @@ public class CategoryEntity {
         this.categoryName = categoryName;
     }
 
-    @JsonIgnore
     public Set<PostEntity> getPosts() {
         return posts;
     }

@@ -1,13 +1,25 @@
 package com.edu.active.controllers.dto;
 
+import com.edu.active.dao.entities.CategoryEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Set;
 
-class Category {
+public class Category {
     private long id;
 
     private String categoryName;
 
+    @JsonIgnore
     private Set<Post> posts;
+
+    public Category(CategoryEntity categoryEntity) {
+        this.id = categoryEntity.getId();
+        this.categoryName = categoryEntity.getCategoryName();
+    }
+
+    public Category() {
+    }
 
     public long getId() {
         return id;

@@ -1,8 +1,12 @@
 package com.edu.active.controllers.dto;
 
+import com.edu.active.dao.entities.UserEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.util.HashSet;
 import java.util.Set;
 
-class User {
+public class User {
 
     private long id;
 
@@ -10,15 +14,29 @@ class User {
 
     private String password;
 
+    @JsonIgnore
     private Set<Category> categoriesFollowing;
 
-
+    @JsonIgnore
     private Set<Post> createdPosts;
 
+    @JsonIgnore
     private Set<Post> likedPosts;
 
     public long getId() {
         return id;
+    }
+
+    public User(UserEntity userEntity) {
+        this.id = userEntity.getId();
+        this.userName = userEntity.getUserName();
+        this.password = userEntity.getPassword();
+        categoriesFollowing = new HashSet<>();
+        createdPosts = new HashSet<>();
+        likedPosts = new HashSet<>();
+    }
+
+    public User() {
     }
 
     public void setId(long id) {

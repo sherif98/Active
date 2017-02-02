@@ -1,8 +1,11 @@
 package com.edu.active.controllers.dto;
 
+import com.edu.active.dao.entities.PostEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Set;
 
-class Post {
+public class Post {
 
     private long id;
 
@@ -10,11 +13,23 @@ class Post {
 
     private String content;
 
+    @JsonIgnore
     private Category category;
 
+    @JsonIgnore
     private User ownerUser;
 
+    @JsonIgnore
     private Set<User> usersLikePost;
+
+    public Post(PostEntity postEntity) {
+        this.id = postEntity.getId();
+        this.title = postEntity.getTitle();
+        this.content = postEntity.getContent();
+    }
+
+    public Post() {
+    }
 
     public long getId() {
         return id;

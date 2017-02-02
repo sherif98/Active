@@ -1,7 +1,5 @@
 package com.edu.active.dao.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
 import java.util.Set;
 
@@ -52,7 +50,6 @@ public class PostEntity {
         this.content = content;
     }
 
-    @JsonIgnore
     public CategoryEntity getCategory() {
         return category;
     }
@@ -61,7 +58,6 @@ public class PostEntity {
         this.category = category;
     }
 
-    @JsonIgnore
     public UserEntity getOwnerUser() {
         return ownerUser;
     }
@@ -70,7 +66,6 @@ public class PostEntity {
         this.ownerUser = ownerUser;
     }
 
-    @JsonIgnore
     public Set<UserEntity> getUsersLikePost() {
         return usersLikePost;
     }

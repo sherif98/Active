@@ -1,5 +1,8 @@
 package com.edu.active.controllers;
 
+import com.edu.active.controllers.dto.Category;
+import com.edu.active.controllers.dto.Post;
+import com.edu.active.controllers.dto.User;
 import com.edu.active.dao.api.CategoriesRepository;
 import com.edu.active.dao.api.PostsRepository;
 import com.edu.active.dao.api.UsersRepository;
@@ -7,9 +10,11 @@ import com.edu.active.dao.entities.CategoryEntity;
 import com.edu.active.dao.entities.PostEntity;
 import com.edu.active.dao.entities.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/user")
@@ -24,23 +29,28 @@ public class UserController {
     private CategoriesRepository categoriesRepository;
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public UserEntity getUserById(@PathVariable long id) {
-        UserEntity user = usersRepository.findOne(id);
+    public User getUserById(@PathVariable long id) {
+        UserEntity userEntity = usersRepository.findOne(id);
+        User user = new User(userEntity);
         return user;
     }
 
     @RequestMapping(value = "/{id}/posts", method = RequestMethod.GET)
-    public Set<PostEntity> getUserPosts(@PathVariable long id) {
+    public Set<Post> getUserPosts(@PathVariable long id) {
         UserEntity user = usersRepository.findOne(id);
-        return user.getCreatedPosts();
+        Set<Post> posts = user.getCreatedPosts().stream().map(Post::new).collect(Collectors.toSet());
+        return posts;
     }
 
     @RequestMapping(value = "/{id}categories", method = RequestMethod.GET)
-    public Set<CategoryEntity> categoriesFollowing(@PathVariable long id) {
-        return usersRepository.findOne(id).getCategoriesFollowing();
+    public Set<Category> categoriesFollowing(@PathVariable long id) {
+        Set<CategoryEntity> categoryEntities = usersRepository.findOne(id).getCategoriesFollowing();
+        Set<Category> categories = categoryEntities.stream().map(Category::new).collect(Collectors.toSet());
+        return categories;
     }
 
     @RequestMapping(value = "/{userId}/posts", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.CREATED)
     public void savePost(@RequestBody PostEntity post, @PathVariable long userId, @RequestParam(name = "category") long categoryId) {
         CategoryEntity category = categoriesRepository.findOne(categoryId);
         post.setCategory(category);
@@ -50,6 +60,7 @@ public class UserController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.CREATED)
     public void saveUser(@RequestBody UserEntity user) {
         usersRepository.save(user);
     }
