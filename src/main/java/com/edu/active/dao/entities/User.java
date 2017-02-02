@@ -1,10 +1,15 @@
 package com.edu.active.dao.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
+//@JsonIdentityInfo(
+//        generator = ObjectIdGenerators.PropertyGenerator.class,
+//        property = "id")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -14,14 +19,18 @@ public class User {
 
     private String password;
 
-    @OneToMany(mappedBy = "ownerUser", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Set<Category> categoriesFollowing;
+
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "ownerUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Post> createdPosts;
 
+    @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Post> likedPosts;
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Category> categoriesFollowing;
 
 
     public long getId() {
@@ -64,6 +73,7 @@ public class User {
         this.likedPosts = likedPosts;
     }
 
+    //
     public Set<Category> getCategoriesFollowing() {
         return categoriesFollowing;
     }

@@ -1,11 +1,15 @@
 package com.edu.active.dao.entities;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Set;
 
 @Entity
 @Table(name = "posts")
-public class Post {
+//@JsonIdentityInfo(
+//        generator = ObjectIdGenerators.PropertyGenerator.class,
+//        property = "id")
+public class Post implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
@@ -18,11 +22,11 @@ public class Post {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @ManyToOne
-    @JoinColumn(name = "owner_id")
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
     private User ownerUser;
 
-    @ManyToMany(mappedBy = "likedPosts")
+    @ManyToMany(mappedBy = "likedPosts", cascade = CascadeType.ALL)
     private Set<User> usersLikePost;
 
 
