@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.edu.active.controllers.exceptions.GlobalExceptionHandlingController.*;
+
 @RestController
 @RequestMapping(value = "/category")
 public class CategoriesController {
@@ -33,24 +35,22 @@ public class CategoriesController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public Resource<Category> getCategoryById(@PathVariable long id) {
         CategoryEntity categoryEntity = categoriesRepository.findOne(id);
+        if (categoryEntity == null) {
+            categoryNotFound(id);
+        }
         Resource<Category> categoryResource = Category.getResource(categoryEntity);
         return categoryResource;
     }
 
-//    @RequestMapping(value = "/{categoryName}/posts", method = RequestMethod.GET)
-//    public Set<Resource<Post>> getCategoryPostsByName(@PathVariable String categoryName) {
-//        CategoryEntity categoryEntity = categoriesRepository.findCategoryByCategoryName(categoryName);
-//        Set<PostEntity> postEntities = categoryEntity.getPosts();
-//        Set<Resource<Post>> resourcePosts = postEntities.stream().map(Post::getResource).collect(Collectors.toSet());
-//        return resourcePosts;
-//    }
 
     @RequestMapping(value = "/{id}/posts", method = RequestMethod.GET)
     public Set<Resource<Post>> getCategoryPostsById(@PathVariable long id) {
         CategoryEntity categoryEntity = categoriesRepository.findOne(id);
+        if (categoryEntity == null) {
+            categoryNotFound(id);
+        }
         Set<PostEntity> postEntities = categoryEntity.getPosts();
         Set<Resource<Post>> resourcePosts = postEntities.stream().map(Post::getResource).collect(Collectors.toSet());
         return resourcePosts;
     }
-
 }

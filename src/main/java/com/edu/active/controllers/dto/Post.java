@@ -6,6 +6,9 @@ import com.edu.active.dao.entities.PostEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.hateoas.Resource;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.util.HashSet;
 import java.util.Set;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -15,8 +18,12 @@ public class Post {
 
     private long id;
 
+    @NotNull
+    @Size(min = 5, max = 20)
     private String title;
 
+    @NotNull
+    @Size(min = 5, max = 20)
     private String content;
 
     @JsonIgnore
@@ -43,6 +50,7 @@ public class Post {
         this.id = postEntity.getId();
         this.title = postEntity.getTitle();
         this.content = postEntity.getContent();
+        usersLikePost = new HashSet<>();
     }
 
     public Post() {

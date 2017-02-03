@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.edu.active.controllers.exceptions.GlobalExceptionHandlingController.*;
+
 @RestController
 @RequestMapping(value = "/post")
 public class PostsController {
@@ -28,22 +30,31 @@ public class PostsController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public Resource<Post> getPost(@PathVariable long id) {
         PostEntity postEntity = postsRepository.findOne(id);
+        if (postEntity == null) {
+            postNotFound(id);
+        }
         Resource<Post> postResource = Post.getResource(postEntity);
         return postResource;
     }
 
     @RequestMapping(value = "/{id}/category", method = RequestMethod.GET)
     public Resource<Category> getPostCategory(@PathVariable long id) {
-        PostEntity post = postsRepository.findOne(id);
-        CategoryEntity categoryEntity = post.getCategory();
+        PostEntity postEntity = postsRepository.findOne(id);
+        if (postEntity == null) {
+            postNotFound(id);
+        }
+        CategoryEntity categoryEntity = postEntity.getCategory();
         Resource<Category> categoryResource = Category.getResource(categoryEntity);
         return categoryResource;
     }
 
     @RequestMapping(value = "/{id}/likes", method = RequestMethod.GET)
     public Set<Resource<User>> getUsersLikePost(@PathVariable long id) {
-        PostEntity post = postsRepository.findOne(id);
-        Set<UserEntity> userEntities = post.getUsersLikePost();
+        PostEntity postEntity = postsRepository.findOne(id);
+        if (postEntity == null) {
+            postNotFound(id);
+        }
+        Set<UserEntity> userEntities = postEntity.getUsersLikePost();
         Set<Resource<User>> userResources = userEntities.stream().map(User::getResource).collect(Collectors.toSet());
         return userResources;
     }
@@ -51,7 +62,13 @@ public class PostsController {
     @RequestMapping(value = "/{postId}/likes", method = RequestMethod.PUT)
     public void likePost(@PathVariable long postId, @RequestParam(name = "userId") long userId) {
         UserEntity userEntity = usersRepository.findOne(userId);
+        if (userEntity == null) {
+            userNotFound(userId);
+        }
         PostEntity postEntity = postsRepository.findOne(postId);
+        if (postEntity == null) {
+            postNotFound(postId);
+        }
         userEntity.getLikedPosts().add(postEntity);
         usersRepository.save(userEntity);
         //TODO

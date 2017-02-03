@@ -5,6 +5,7 @@ import com.edu.active.dao.entities.CategoryEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.hateoas.Resource;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -31,6 +32,7 @@ public class Category {
     public Category(CategoryEntity categoryEntity) {
         this.id = categoryEntity.getId();
         this.categoryName = categoryEntity.getCategoryName();
+        posts = new HashSet<>();
     }
 
     public Category() {

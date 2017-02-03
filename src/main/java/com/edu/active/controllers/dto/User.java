@@ -5,6 +5,9 @@ import com.edu.active.dao.entities.UserEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.hateoas.Resource;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.util.HashSet;
 import java.util.Set;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -14,8 +17,12 @@ public class User {
 
     private long id;
 
+    @NotNull
+    @Size(min = 5, max = 20)
     private String userName;
 
+    @NotNull
+    @Size(min = 5, max = 20)
     private String password;
 
     @JsonIgnore
@@ -46,9 +53,9 @@ public class User {
         this.id = userEntity.getId();
         this.userName = userEntity.getUserName();
         this.password = userEntity.getPassword();
-//        categoriesFollowing = new HashSet<>();
-//        createdPosts = new HashSet<>();
-//        likedPosts = new HashSet<>();
+        categoriesFollowing = new HashSet<>();
+        createdPosts = new HashSet<>();
+        likedPosts = new HashSet<>();
     }
 
     public User() {
