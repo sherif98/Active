@@ -3,6 +3,7 @@ package com.edu.active.controllers;
 import com.edu.active.controllers.dto.Category;
 import com.edu.active.controllers.dto.Post;
 import com.edu.active.controllers.dto.User;
+import com.edu.active.controllers.exceptions.ResourceAlreadyExistsException;
 import com.edu.active.dao.api.CategoriesRepository;
 import com.edu.active.dao.api.UsersRepository;
 import com.edu.active.dao.entities.CategoryEntity;
@@ -106,6 +107,9 @@ public class UserController {
         if (errors.hasErrors()) {
             invalidData(errors.getAllErrors());
         }
+        if (userExists(user)) {
+            throw new ResourceAlreadyExistsException("user " + user.getUserName());
+        }
         usersRepository.save(userEntity);
     }
 
@@ -123,5 +127,9 @@ public class UserController {
         Set<CategoryEntity> categoryEntities = userEntity.getCategoriesFollowing();
         categoryEntities.add(categoryEntity);
         usersRepository.save(userEntity);
+    }
+
+    private boolean userExists(@RequestBody User user) {
+        return usersRepository.findUserByUserName(user.getUserName()) != null;
     }
 }
