@@ -16,6 +16,7 @@ public class CategoryEntity {
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<PostEntity> posts;
 
+
     public long getId() {
         return id;
     }

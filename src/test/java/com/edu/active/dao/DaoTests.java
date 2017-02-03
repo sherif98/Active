@@ -2,16 +2,11 @@ package com.edu.active.dao;
 
 import com.edu.active.dao.api.PostsRepository;
 import com.edu.active.dao.api.UsersRepository;
-import com.edu.active.dao.entities.PostEntity;
-import com.edu.active.dao.entities.UserEntity;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.Arrays;
-import java.util.HashSet;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -54,18 +49,18 @@ public class DaoTests {
 //    }
     @Test
     public void test2() {
-        UserEntity user = new UserEntity();
-        user.setUserName("sherif");
-        user.setPassword("12345");
-
-        PostEntity post = new PostEntity();
-        post.setTitle("java");
-        post.setContent("java is great");
-        post.setOwnerUser(user);
-        post.setUsersLikePost(new HashSet<>(Arrays.asList(user)));
-
-        user.setCreatedPosts(new HashSet<>(Arrays.asList(post)));
-        user.setLikedPosts(new HashSet<>(Arrays.asList(post)));
-        usersRepository.save(user);
+//        UserEntity user = new UserEntity();
+//        user.setUserName("sherif");
+//        user.setPassword("12345");
+//
+//        PostEntity post = new PostEntity();
+//        post.setTitle("java");
+//        post.setContent("java is great");
+//        post.setOwnerUser(user);
+//        post.setUsersLikePost(new HashSet<>(Arrays.asList(user)));
+//
+//        user.setCreatedPosts(new HashSet<>(Arrays.asList(post)));
+//        user.setLikedPosts(new HashSet<>(Arrays.asList(post)));
+//        usersRepository.save(user);
     }
 }

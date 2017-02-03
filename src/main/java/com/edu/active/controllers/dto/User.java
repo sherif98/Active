@@ -1,10 +1,14 @@
 package com.edu.active.controllers.dto;
 
+import com.edu.active.controllers.UserController;
 import com.edu.active.dao.entities.UserEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.hateoas.Resource;
 
-import java.util.HashSet;
 import java.util.Set;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 public class User {
 
@@ -27,13 +31,24 @@ public class User {
         return id;
     }
 
+
+    public static Resource<User> getResource(UserEntity userEntity) {
+        User user = new User(userEntity);
+        Resource<User> userResource = new Resource<>(user);
+        userResource.add(linkTo(methodOn(UserController.class).getUserById(user.getId())).withSelfRel());
+        userResource.add(linkTo(methodOn(UserController.class).getUserPosts(user.getId())).withRel("created_posts"));
+        userResource.add(linkTo(methodOn(UserController.class).categoriesFollowing(user.getId())).withRel("following_categories"));
+        userResource.add(linkTo(methodOn(UserController.class).getLikedPosts(user.getId())).withRel("liked_posts"));
+        return userResource;
+    }
+
     public User(UserEntity userEntity) {
         this.id = userEntity.getId();
         this.userName = userEntity.getUserName();
         this.password = userEntity.getPassword();
-        categoriesFollowing = new HashSet<>();
-        createdPosts = new HashSet<>();
-        likedPosts = new HashSet<>();
+//        categoriesFollowing = new HashSet<>();
+//        createdPosts = new HashSet<>();
+//        likedPosts = new HashSet<>();
     }
 
     public User() {

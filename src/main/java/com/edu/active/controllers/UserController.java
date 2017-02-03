@@ -10,6 +10,7 @@ import com.edu.active.dao.entities.CategoryEntity;
 import com.edu.active.dao.entities.PostEntity;
 import com.edu.active.dao.entities.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,48 +23,72 @@ public class UserController {
 
     @Autowired
     private UsersRepository usersRepository;
+
     @Autowired
     private PostsRepository postsRepository;
 
     @Autowired
     private CategoriesRepository categoriesRepository;
 
+
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public User getUserById(@PathVariable long id) {
+    public Resource<User> getUserById(@PathVariable long id) {
         UserEntity userEntity = usersRepository.findOne(id);
-        User user = new User(userEntity);
-        return user;
+        return User.getResource(userEntity);
     }
 
     @RequestMapping(value = "/{id}/posts", method = RequestMethod.GET)
-    public Set<Post> getUserPosts(@PathVariable long id) {
+    public Set<Resource<Post>> getUserPosts(@PathVariable long id) {
         UserEntity user = usersRepository.findOne(id);
-        Set<Post> posts = user.getCreatedPosts().stream().map(Post::new).collect(Collectors.toSet());
+        Set<Resource<Post>> posts = user.getCreatedPosts().stream().map(Post::getResource).collect(Collectors.toSet());
         return posts;
     }
 
-    @RequestMapping(value = "/{id}categories", method = RequestMethod.GET)
-    public Set<Category> categoriesFollowing(@PathVariable long id) {
-        Set<CategoryEntity> categoryEntities = usersRepository.findOne(id).getCategoriesFollowing();
-        Set<Category> categories = categoryEntities.stream().map(Category::new).collect(Collectors.toSet());
-        return categories;
+    @RequestMapping(value = "/{id}/categories", method = RequestMethod.GET)
+    public Set<Resource<Category>> categoriesFollowing(@PathVariable long id) {
+        UserEntity userEntity = usersRepository.findOne(id);
+        Set<CategoryEntity> categoryEntities = userEntity.getCategoriesFollowing();
+        Set<Resource<Category>> resourceCategories = categoryEntities.stream().map(Category::getResource).collect(Collectors.toSet());
+        return resourceCategories;
+    }
+
+    @RequestMapping(value = "/{id}/likes", method = RequestMethod.GET)
+    public Set<Resource<Post>> getLikedPosts(@PathVariable long id) {
+        UserEntity userEntity = usersRepository.findOne(id);
+        Set<PostEntity> postEntities = userEntity.getLikedPosts();
+        Set<Resource<Post>> resourcePosts = postEntities.stream().map(Post::getResource).collect(Collectors.toSet());
+        return resourcePosts;
     }
 
     @RequestMapping(value = "/{userId}/posts", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public void savePost(@RequestBody PostEntity post, @PathVariable long userId, @RequestParam(name = "category") long categoryId) {
-        CategoryEntity category = categoriesRepository.findOne(categoryId);
-        post.setCategory(category);
-        UserEntity user = usersRepository.findOne(userId);
-        post.setOwnerUser(user);
-        postsRepository.save(post);
+    public void savePost(@RequestBody Post post, @PathVariable long userId, @RequestParam(name = "category") long categoryId) {
+        UserEntity userEntity = usersRepository.findOne(userId);
+        CategoryEntity categoryEntity = categoriesRepository.findOne(categoryId);
+
+        PostEntity postEntity = new PostEntity(post, userEntity, categoryEntity);
+        userEntity.getCreatedPosts().add(postEntity);
+        categoryEntity.getPosts().add(postEntity);
+
+        usersRepository.save(userEntity);
+        categoriesRepository.save(categoryEntity);
     }
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public void saveUser(@RequestBody UserEntity user) {
-        usersRepository.save(user);
+    public void saveUser(@RequestBody User user) {
+        UserEntity userEntity = new UserEntity(user);
+        usersRepository.save(userEntity);
     }
 
+    //TODO make user follow a category  (PUT)
 
+    @RequestMapping(value = "/{userId}", method = RequestMethod.PUT)
+    public void followCategory(@PathVariable long userId, @RequestParam("categoryId") long categoryId) {
+        UserEntity userEntity = usersRepository.findOne(userId);
+        CategoryEntity categoryEntity = categoriesRepository.findOne(categoryId);
+        Set<CategoryEntity> categoryEntities = userEntity.getCategoriesFollowing();
+        categoryEntities.add(categoryEntity);
+        usersRepository.save(userEntity);
+    }
 }

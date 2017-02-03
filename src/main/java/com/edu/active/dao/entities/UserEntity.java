@@ -1,5 +1,7 @@
 package com.edu.active.dao.entities;
 
+import com.edu.active.controllers.dto.User;
+
 import javax.persistence.*;
 import java.util.Set;
 
@@ -25,6 +27,14 @@ public class UserEntity {
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<PostEntity> likedPosts;
 
+
+    public UserEntity(User user) {
+        this.userName = user.getUserName();
+        this.password = user.getPassword();
+    }
+
+    public UserEntity() {
+    }
 
     public long getId() {
         return id;

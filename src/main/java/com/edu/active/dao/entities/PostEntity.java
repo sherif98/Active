@@ -1,5 +1,7 @@
 package com.edu.active.dao.entities;
 
+import com.edu.active.controllers.dto.Post;
+
 import javax.persistence.*;
 import java.util.Set;
 
@@ -25,6 +27,15 @@ public class PostEntity {
     @ManyToMany(mappedBy = "likedPosts", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<UserEntity> usersLikePost;
 
+
+    public PostEntity(Post post, UserEntity userEntity, CategoryEntity categoryEntity) {
+        this.title = post.getTitle();
+        this.content = post.getContent();
+        this.ownerUser = userEntity;
+        this.category = categoryEntity;
+    }
+
+    public PostEntity(){}
 
     public long getId() {
         return id;

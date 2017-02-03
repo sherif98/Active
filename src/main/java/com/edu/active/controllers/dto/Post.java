@@ -1,9 +1,15 @@
 package com.edu.active.controllers.dto;
 
+import com.edu.active.controllers.PostsController;
+import com.edu.active.controllers.UserController;
 import com.edu.active.dao.entities.PostEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.hateoas.Resource;
 
 import java.util.Set;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 public class Post {
 
@@ -21,6 +27,17 @@ public class Post {
 
     @JsonIgnore
     private Set<User> usersLikePost;
+
+
+    public static Resource<Post> getResource(PostEntity postEntity) {
+        Post post = new Post(postEntity);
+        Resource<Post> postResource = new Resource<>(post);
+        postResource.add(linkTo(methodOn(PostsController.class).getPost(post.getId())).withSelfRel());
+        postResource.add(linkTo(methodOn(PostsController.class).getPostCategory(post.getId())).withRel("category"));
+        postResource.add(linkTo(methodOn(UserController.class).getUserById(postEntity.getOwnerUser().getId())).withRel("post_owner"));
+        postResource.add(linkTo(methodOn(PostsController.class).getUsersLikePost(post.getId())).withRel("likes"));
+        return postResource;
+    }
 
     public Post(PostEntity postEntity) {
         this.id = postEntity.getId();
