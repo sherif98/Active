@@ -13,6 +13,7 @@ public class ImageEntity {
     private long id;
 
     @Lob
+    @Column(length = 2097152)
     private byte[] binaryImage;
 
     public ImageEntity(Image image) {
