@@ -3,6 +3,7 @@ package com.edu.active.controllers.dto;
 import com.edu.active.controllers.UserController;
 import com.edu.active.dao.entities.UserEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.Resource;
 
 import javax.validation.constraints.NotNull;
@@ -34,6 +35,9 @@ public class User {
     @JsonIgnore
     private Set<Post> likedPosts;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Image image;
+
     public long getId() {
         return id;
     }
@@ -46,6 +50,7 @@ public class User {
         userResource.add(linkTo(methodOn(UserController.class).getUserPosts(user.getId())).withRel("created_posts"));
         userResource.add(linkTo(methodOn(UserController.class).categoriesFollowing(user.getId())).withRel("following_categories"));
         userResource.add(linkTo(methodOn(UserController.class).getLikedPosts(user.getId())).withRel("liked_posts"));
+        userResource.add(linkTo(methodOn(UserController.class).getUserImage(userEntity.getId())).withRel("image"));
         return userResource;
     }
 
@@ -103,5 +108,14 @@ public class User {
 
     public void setLikedPosts(Set<Post> likedPosts) {
         this.likedPosts = likedPosts;
+    }
+
+    @JsonIgnore
+    public Image getImage() {
+        return image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
     }
 }

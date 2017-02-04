@@ -7,7 +7,6 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users")
-
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,10 +26,15 @@ public class UserEntity {
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<PostEntity> likedPosts;
 
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_image_id")
+    private ImageEntity imageEntity;
+
 
     public UserEntity(User user) {
         this.userName = user.getUserName();
         this.password = user.getPassword();
+        this.imageEntity = new ImageEntity(user.getImage());
     }
 
     public UserEntity() {
@@ -82,6 +86,14 @@ public class UserEntity {
 
     public void setCategoriesFollowing(Set<CategoryEntity> categoriesFollowing) {
         this.categoriesFollowing = categoriesFollowing;
+    }
+
+    public ImageEntity getImageEntity() {
+        return imageEntity;
+    }
+
+    public void setImageEntity(ImageEntity imageEntity) {
+        this.imageEntity = imageEntity;
     }
 
     @Override

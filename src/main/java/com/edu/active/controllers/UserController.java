@@ -1,12 +1,14 @@
 package com.edu.active.controllers;
 
 import com.edu.active.controllers.dto.Category;
+import com.edu.active.controllers.dto.Image;
 import com.edu.active.controllers.dto.Post;
 import com.edu.active.controllers.dto.User;
 import com.edu.active.controllers.exceptions.ResourceAlreadyExistsException;
 import com.edu.active.dao.api.CategoriesRepository;
 import com.edu.active.dao.api.UsersRepository;
 import com.edu.active.dao.entities.CategoryEntity;
+import com.edu.active.dao.entities.ImageEntity;
 import com.edu.active.dao.entities.PostEntity;
 import com.edu.active.dao.entities.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,6 +42,14 @@ public class UserController {
             userNotFound(id);
         }
         return User.getResource(userEntity);
+    }
+
+    @RequestMapping(value = "/{userId}/image", method = RequestMethod.GET)
+    public Resource<Image> getUserImage(@PathVariable long userId) {
+        UserEntity userEntity = usersRepository.findOne(userId);
+        ImageEntity imageEntity = userEntity.getImageEntity();
+        Resource<Image> imageResource = Image.getResource(imageEntity);
+        return imageResource;
     }
 
     @RequestMapping(value = "/{id}/posts", method = RequestMethod.GET)
@@ -76,7 +87,7 @@ public class UserController {
 
     @RequestMapping(value = "/{userId}/posts", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public void savePost(@RequestBody Post post, @PathVariable long userId, @RequestParam(name = "category") long categoryId,
+    public void savePost(@RequestBody @Valid Post post, @PathVariable long userId, @RequestParam(name = "category") long categoryId,
                          Errors errors) {
 
         if (errors.hasErrors()) {
@@ -102,7 +113,7 @@ public class UserController {
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public void saveUser(@RequestBody User user, Errors errors) {
+    public void saveUser(@RequestBody @Valid User user, Errors errors) {
         UserEntity userEntity = new UserEntity(user);
         if (errors.hasErrors()) {
             invalidData(errors.getAllErrors());
