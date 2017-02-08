@@ -11,6 +11,7 @@ import com.edu.active.dao.entities.CategoryEntity;
 import com.edu.active.dao.entities.ImageEntity;
 import com.edu.active.dao.entities.PostEntity;
 import com.edu.active.dao.entities.UserEntity;
+import com.edu.active.services.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ import static com.edu.active.controllers.exceptions.GlobalExceptionHandlingContr
 
 @RestController
 @RequestMapping(value = "/user")
+@CrossOrigin
 public class UserController {
 
     @Autowired
@@ -33,6 +35,9 @@ public class UserController {
 
     @Autowired
     private CategoriesRepository categoriesRepository;
+
+    @Autowired
+    private EmailService emailService;
 
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
@@ -122,6 +127,7 @@ public class UserController {
             throw new ResourceAlreadyExistsException("user " + user.getUserName());
         }
         usersRepository.save(userEntity);
+        emailService.sendEmail(user);
     }
 
 

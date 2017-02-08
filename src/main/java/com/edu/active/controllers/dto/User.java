@@ -4,6 +4,7 @@ import com.edu.active.controllers.UserController;
 import com.edu.active.dao.entities.UserEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.validator.constraints.Email;
 import org.springframework.hateoas.Resource;
 
 import javax.validation.constraints.NotNull;
@@ -25,6 +26,10 @@ public class User {
     @NotNull
     @Size(min = 5, max = 20)
     private String password;
+
+    @Email
+    @NotNull
+    private String email;
 
     @JsonIgnore
     private Set<Category> categoriesFollowing;
@@ -58,6 +63,7 @@ public class User {
         this.id = userEntity.getId();
         this.userName = userEntity.getUserName();
         this.password = userEntity.getPassword();
+        this.email = userEntity.getEmail();
         categoriesFollowing = new HashSet<>();
         createdPosts = new HashSet<>();
         likedPosts = new HashSet<>();
@@ -117,5 +123,13 @@ public class User {
 
     public void setImage(Image image) {
         this.image = image;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

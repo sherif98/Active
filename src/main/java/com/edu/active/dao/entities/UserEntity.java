@@ -16,6 +16,9 @@ public class UserEntity {
 
     private String password;
 
+
+    private String email;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<CategoryEntity> categoriesFollowing;
 
@@ -34,6 +37,7 @@ public class UserEntity {
     public UserEntity(User user) {
         this.userName = user.getUserName();
         this.password = user.getPassword();
+        this.email = user.getEmail();
         this.imageEntity = new ImageEntity(user.getImage());
     }
 
@@ -94,6 +98,14 @@ public class UserEntity {
 
     public void setImageEntity(ImageEntity imageEntity) {
         this.imageEntity = imageEntity;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override

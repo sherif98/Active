@@ -19,6 +19,7 @@ import static com.edu.active.controllers.exceptions.GlobalExceptionHandlingContr
 
 @RestController
 @RequestMapping(value = "/post")
+@CrossOrigin
 public class PostsController {
 
     @Autowired
