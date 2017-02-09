@@ -1,3 +1,3 @@
 # Active
 
-Social Web App developed using Spring framework
+backend for Social Web App developed using Spring framework.
