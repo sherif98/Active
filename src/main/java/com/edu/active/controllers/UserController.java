@@ -13,6 +13,8 @@ import com.edu.active.dao.entities.ImageEntity;
 import com.edu.active.dao.entities.PostEntity;
 import com.edu.active.dao.entities.UserEntity;
 import com.edu.active.services.EmailService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +33,7 @@ import static com.edu.active.controllers.exceptions.GlobalExceptionHandlingContr
 @RequestMapping(value = "/user")
 @CrossOrigin
 public class UserController {
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private UsersRepository usersRepository;
@@ -114,10 +117,11 @@ public class UserController {
 
     @RequestMapping(value = "/{userId}/posts", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public void savePost(@RequestBody @Valid Post post, @PathVariable long userId, @RequestParam(name = "category") long categoryId,
-                         Errors errors) {
+    public void savePost(@RequestBody @Valid Post post,
+                         Errors errors, @PathVariable long userId, @RequestParam(name = "category") long categoryId) {
 
         if (errors.hasErrors()) {
+            logger.info("errors exists in post" + errors);
             invalidData(errors.getAllErrors());
         }
         UserEntity userEntity = usersRepository.findOne(userId);

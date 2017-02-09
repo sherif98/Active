@@ -9,7 +9,7 @@ public class InvalidDataException extends RuntimeException {
 
     public InvalidDataException(List<ObjectError> allErrors) {
         message = new StringBuilder();
-        allErrors.forEach(e -> message.append(e.getDefaultMessage()));
+        allErrors.forEach(e -> message.append(e.getCode() + e.getDefaultMessage()));
     }
 
     public String getMessage() {
