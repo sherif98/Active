@@ -24,7 +24,7 @@ public class Category {
         Category category = new Category(categoryEntity);
         Resource<Category> categoryResource = new Resource<>(category);
         categoryResource.add(linkTo(methodOn(CategoriesController.class).getCategoryById(category.getId())).withSelfRel());
-        categoryResource.add(linkTo(methodOn(CategoriesController.class).getCategoryPostsById(category.getId()))
+        categoryResource.add(linkTo(methodOn(CategoriesController.class).getCategoryPostsById(category.getId(), null))
                 .withRel("category_posts"));
         return categoryResource;
     }

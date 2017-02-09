@@ -6,6 +6,7 @@ import com.edu.active.controllers.dto.Post;
 import com.edu.active.controllers.dto.User;
 import com.edu.active.controllers.exceptions.ResourceAlreadyExistsException;
 import com.edu.active.dao.api.CategoriesRepository;
+import com.edu.active.dao.api.PostsRepository;
 import com.edu.active.dao.api.UsersRepository;
 import com.edu.active.dao.entities.CategoryEntity;
 import com.edu.active.dao.entities.ImageEntity;
@@ -13,6 +14,9 @@ import com.edu.active.dao.entities.PostEntity;
 import com.edu.active.dao.entities.UserEntity;
 import com.edu.active.services.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.Errors;
@@ -20,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.edu.active.controllers.exceptions.GlobalExceptionHandlingController.*;
 
@@ -35,6 +38,9 @@ public class UserController {
 
     @Autowired
     private CategoriesRepository categoriesRepository;
+
+    @Autowired
+    private PostsRepository postsRepository;
 
     @Autowired
     private EmailService emailService;
@@ -58,36 +64,52 @@ public class UserController {
     }
 
     @RequestMapping(value = "/{id}/posts", method = RequestMethod.GET)
-    public Set<Resource<Post>> getUserPosts(@PathVariable long id) {
+    public Page<Resource<Post>> getUserPosts(
+            @PathVariable long id,
+            @PageableDefault(size = 10, page = 0) Pageable pageable) {
         UserEntity userEntity = usersRepository.findOne(id);
         if (userEntity == null) {
             userNotFound(id);
         }
-        Set<Resource<Post>> posts = userEntity.getCreatedPosts().stream().map(Post::getResource).collect(Collectors.toSet());
-        return posts;
+        Page<PostEntity> page = postsRepository.findPostsByOwnerUser(userEntity, pageable);
+        return page.map(Post::getResource);
+//        Set<Resource<Post>> posts = userEntity.getCreatedPosts().stream().map(Post::getResource).collect(Collectors.toSet());
+
+//        List<Resource<Post>> resourceList = userEntity.getCreatedPosts().stream().map(Post::getResource).collect(Collectors.toList());
+//        Page<Resource<Post>> page = new PageImpl<Resource<Post>>(resourceList, pageable, resourceList.size());
+//        return page;
     }
 
 
     @RequestMapping(value = "/{id}/categories", method = RequestMethod.GET)
-    public Set<Resource<Category>> categoriesFollowing(@PathVariable long id) {
+    public Page<Resource<Category>> categoriesFollowing(
+            @PathVariable long id, @PageableDefault(size = 10, page = 0) Pageable pageable) {
         UserEntity userEntity = usersRepository.findOne(id);
         if (userEntity == null) {
             userNotFound(id);
         }
-        Set<CategoryEntity> categoryEntities = userEntity.getCategoriesFollowing();
-        Set<Resource<Category>> resourceCategories = categoryEntities.stream().map(Category::getResource).collect(Collectors.toSet());
-        return resourceCategories;
+        //TODO test this method
+        Page<CategoryEntity> categoryEntityPage = categoriesRepository.findCategoriesByUsersFollowingCategoryContaining(userEntity, pageable);
+        return categoryEntityPage.map(Category::getResource);
+
+//        Set<CategoryEntity> categoryEntities = userEntity.getCategoriesFollowing();
+//        Set<Resource<Category>> resourceCategories = categoryEntities.stream().map(Category::getResource).collect(Collectors.toSet());
+//        return resourceCategories;
     }
 
+    //TODO test this method
     @RequestMapping(value = "/{id}/likes", method = RequestMethod.GET)
-    public Set<Resource<Post>> getLikedPosts(@PathVariable long id) {
+    public Page<Resource<Post>> getLikedPosts(
+            @PathVariable long id, @PageableDefault(size = 10, page = 0) Pageable pageable) {
         UserEntity userEntity = usersRepository.findOne(id);
         if (userEntity == null) {
             userNotFound(id);
         }
-        Set<PostEntity> postEntities = userEntity.getLikedPosts();
-        Set<Resource<Post>> resourcePosts = postEntities.stream().map(Post::getResource).collect(Collectors.toSet());
-        return resourcePosts;
+        Page<PostEntity> postEntityPage = postsRepository.findPostsByUsersLikePostContaining(userEntity, pageable);
+        return postEntityPage.map(Post::getResource);
+//        Set<PostEntity> postEntities = userEntity.getLikedPosts();
+//        Set<Resource<Post>> resourcePosts = postEntities.stream().map(Post::getResource).collect(Collectors.toSet());
+//        return resourcePosts;
     }
 
     @RequestMapping(value = "/{userId}/posts", method = RequestMethod.POST)

@@ -52,9 +52,9 @@ public class User {
         User user = new User(userEntity);
         Resource<User> userResource = new Resource<>(user);
         userResource.add(linkTo(methodOn(UserController.class).getUserById(user.getId())).withSelfRel());
-        userResource.add(linkTo(methodOn(UserController.class).getUserPosts(user.getId())).withRel("created_posts"));
-        userResource.add(linkTo(methodOn(UserController.class).categoriesFollowing(user.getId())).withRel("following_categories"));
-        userResource.add(linkTo(methodOn(UserController.class).getLikedPosts(user.getId())).withRel("liked_posts"));
+        userResource.add(linkTo(methodOn(UserController.class).getUserPosts(user.getId(), null)).withRel("created_posts"));
+        userResource.add(linkTo(methodOn(UserController.class).categoriesFollowing(user.getId(), null)).withRel("following_categories"));
+        userResource.add(linkTo(methodOn(UserController.class).getLikedPosts(user.getId(), null)).withRel("liked_posts"));
         userResource.add(linkTo(methodOn(UserController.class).getUserImage(userEntity.getId())).withRel("image"));
         return userResource;
     }

@@ -19,7 +19,7 @@ public class UserEntity {
 
     private String email;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<CategoryEntity> categoriesFollowing;
 
 

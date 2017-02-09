@@ -3,17 +3,17 @@ package com.edu.active.controllers;
 import com.edu.active.controllers.dto.Category;
 import com.edu.active.controllers.dto.Post;
 import com.edu.active.dao.api.CategoriesRepository;
+import com.edu.active.dao.api.PostsRepository;
 import com.edu.active.dao.entities.CategoryEntity;
 import com.edu.active.dao.entities.PostEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.Resource;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static com.edu.active.controllers.exceptions.GlobalExceptionHandlingController.*;
+import static com.edu.active.controllers.exceptions.GlobalExceptionHandlingController.categoryNotFound;
 
 @RestController
 @RequestMapping(value = "/category")
@@ -23,11 +23,16 @@ public class CategoriesController {
     @Autowired
     private CategoriesRepository categoriesRepository;
 
+    @Autowired
+    private PostsRepository postsRepository;
+
     @RequestMapping(method = RequestMethod.GET)
-    public List<Resource<Category>> getAllCategories() {
-        List<CategoryEntity> categoryEntities = categoriesRepository.findAll();
-        List<Resource<Category>> resourceCategories = categoryEntities.stream().map(Category::getResource).collect(Collectors.toList());
-        return resourceCategories;
+    public Page<Resource<Category>> getAllCategories(
+            @PageableDefault(size = 10, page = 0) Pageable pageable) {
+        Page<CategoryEntity> categoryEntities = categoriesRepository.findAll(pageable);
+        return categoryEntities.map(Category::getResource);
+//        List<Resource<Category>> resourceCategories = categoryEntities.stream().map(Category::getResource).collect(Collectors.toList());
+//        return resourceCategories;
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
@@ -42,13 +47,17 @@ public class CategoriesController {
 
 
     @RequestMapping(value = "/{id}/posts", method = RequestMethod.GET)
-    public Set<Resource<Post>> getCategoryPostsById(@PathVariable long id) {
+    public Page<Resource<Post>> getCategoryPostsById(
+            @PathVariable long id, @PageableDefault(size = 10, page = 0) Pageable pageable) {
         CategoryEntity categoryEntity = categoriesRepository.findOne(id);
         if (categoryEntity == null) {
             categoryNotFound(id);
         }
-        Set<PostEntity> postEntities = categoryEntity.getPosts();
-        Set<Resource<Post>> resourcePosts = postEntities.stream().map(Post::getResource).collect(Collectors.toSet());
-        return resourcePosts;
+        Page<PostEntity> postEntityPage = postsRepository.findPostsByCategory(categoryEntity, pageable);
+        return postEntityPage.map(Post::getResource);
+
+//        Set<PostEntity> postEntities = categoryEntity.getPosts();
+//        Set<Resource<Post>> resourcePosts = postEntities.stream().map(Post::getResource).collect(Collectors.toSet());
+//        return resourcePosts;
     }
 }

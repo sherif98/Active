@@ -9,13 +9,14 @@ import com.edu.active.dao.entities.CategoryEntity;
 import com.edu.active.dao.entities.PostEntity;
 import com.edu.active.dao.entities.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.Resource;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static com.edu.active.controllers.exceptions.GlobalExceptionHandlingController.*;
+import static com.edu.active.controllers.exceptions.GlobalExceptionHandlingController.postNotFound;
+import static com.edu.active.controllers.exceptions.GlobalExceptionHandlingController.userNotFound;
 
 @RestController
 @RequestMapping(value = "/post")
@@ -50,14 +51,19 @@ public class PostsController {
     }
 
     @RequestMapping(value = "/{id}/likes", method = RequestMethod.GET)
-    public Set<Resource<User>> getUsersLikePost(@PathVariable long id) {
+    public Page<Resource<User>> getUsersLikePost(
+            @PathVariable long id,
+            @PageableDefault(size = 10, page = 0) Pageable pageable) {
         PostEntity postEntity = postsRepository.findOne(id);
         if (postEntity == null) {
             postNotFound(id);
         }
-        Set<UserEntity> userEntities = postEntity.getUsersLikePost();
-        Set<Resource<User>> userResources = userEntities.stream().map(User::getResource).collect(Collectors.toSet());
-        return userResources;
+        Page<UserEntity> userEntityPage = usersRepository.findUsersByLikedPostsContaining(postEntity, pageable);
+        return userEntityPage.map(User::getResource);
+
+//        Set<UserEntity> userEntities = postEntity.getUsersLikePost();
+//        Set<Resource<User>> userResources = userEntities.stream().map(User::getResource).collect(Collectors.toSet());
+//        return userResources;
     }
 
     @RequestMapping(value = "/{postId}/likes", method = RequestMethod.PUT)

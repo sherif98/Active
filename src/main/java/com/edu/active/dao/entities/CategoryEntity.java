@@ -16,6 +16,8 @@ public class CategoryEntity {
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<PostEntity> posts;
 
+    @ManyToMany(mappedBy = "categoriesFollowing", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<UserEntity> usersFollowingCategory;
 
     public long getId() {
         return id;
@@ -39,6 +41,14 @@ public class CategoryEntity {
 
     public void setPosts(Set<PostEntity> posts) {
         this.posts = posts;
+    }
+
+    public Set<UserEntity> getUsersFollowingCategory() {
+        return usersFollowingCategory;
+    }
+
+    public void setUsersFollowingCategory(Set<UserEntity> usersFollowingCategory) {
+        this.usersFollowingCategory = usersFollowingCategory;
     }
 
     @Override

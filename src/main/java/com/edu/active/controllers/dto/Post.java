@@ -41,7 +41,7 @@ public class Post {
         postResource.add(linkTo(methodOn(PostsController.class).getPost(post.getId())).withSelfRel());
         postResource.add(linkTo(methodOn(PostsController.class).getPostCategory(post.getId())).withRel("category"));
         postResource.add(linkTo(methodOn(UserController.class).getUserById(postEntity.getOwnerUser().getId())).withRel("post_owner"));
-        postResource.add(linkTo(methodOn(PostsController.class).getUsersLikePost(post.getId())).withRel("likes"));
+        postResource.add(linkTo(methodOn(PostsController.class).getUsersLikePost(post.getId(), null)).withRel("likes"));
         return postResource;
     }
 
