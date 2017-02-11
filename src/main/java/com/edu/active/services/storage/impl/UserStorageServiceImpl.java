@@ -1,0 +1,132 @@
+package com.edu.active.services.storage.impl;
+
+import com.edu.active.dao.api.CategoriesRepository;
+import com.edu.active.dao.api.PostsRepository;
+import com.edu.active.dao.api.UsersRepository;
+import com.edu.active.dao.entities.CategoryEntity;
+import com.edu.active.dao.entities.ImageEntity;
+import com.edu.active.dao.entities.PostEntity;
+import com.edu.active.dao.entities.UserEntity;
+import com.edu.active.services.storage.api.UserStorageService;
+import com.edu.active.services.storage.model.Category;
+import com.edu.active.services.storage.model.Image;
+import com.edu.active.services.storage.model.Post;
+import com.edu.active.services.storage.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.Resource;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+import java.util.Set;
+
+@Service
+public class UserStorageServiceImpl implements UserStorageService {
+
+    @Autowired
+    private CategoriesRepository categoriesRepository;
+
+    @Autowired
+    private UsersRepository usersRepository;
+
+    @Autowired
+    private PostsRepository postsRepository;
+
+    @Override
+    public Optional<Resource<User>> getUserById(long userId) {
+        UserEntity userEntity = usersRepository.findOne(userId);
+        if (userEntity == null) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(User.getResource(userEntity));
+    }
+
+    @Override
+    public Optional<Resource<Image>> getUserImage(long userId) {
+        UserEntity userEntity = usersRepository.findOne(userId);
+        if (userEntity == null) {
+            return Optional.empty();
+        }
+        ImageEntity imageEntity = userEntity.getImageEntity();
+        Resource<Image> imageResource = Image.getResource(imageEntity);
+        return Optional.ofNullable(imageResource);
+    }
+
+    @Override
+    public Optional<Page<Resource<Post>>> getUserPosts(long userId, Pageable pageable) {
+        UserEntity userEntity = usersRepository.findOne(userId);
+        if (userEntity == null) {
+            return Optional.empty();
+        }
+        Page<PostEntity> page = postsRepository.findPostsByOwnerUser(userEntity, pageable);
+        return Optional.ofNullable(page.map(Post::getResource));
+    }
+
+    @Override
+    public Optional<Page<Resource<Category>>> getUserFollowingCategories(long userId, Pageable pageable) {
+        UserEntity userEntity = usersRepository.findOne(userId);
+        if (userEntity == null) {
+            return Optional.empty();
+        }
+        Page<CategoryEntity> categoryEntityPage = categoriesRepository.findCategoriesByUsersFollowingCategoryContaining(userEntity, pageable);
+        return Optional.ofNullable(categoryEntityPage.map(Category::getResource));
+    }
+
+    @Override
+    public Optional<Page<Resource<Post>>> getUserLikedPosts(long userId, Pageable pageable) {
+        UserEntity userEntity = usersRepository.findOne(userId);
+        if (userEntity == null) {
+            Optional.empty();
+        }
+        Page<PostEntity> postEntityPage = postsRepository.findPostsByUsersLikePostContaining(userEntity, pageable);
+        return Optional.ofNullable(postEntityPage.map(Post::getResource));
+    }
+
+    @Override
+    public void addPostToUserCreatedPosts(long userId, Post post, long categoryId) {
+        UserEntity userEntity = usersRepository.findOne(userId);
+        if (userEntity == null) {
+            //TODO
+//            userNotFound(userId);
+        }
+        CategoryEntity categoryEntity = categoriesRepository.findOne(categoryId);
+        if (categoryEntity == null) {
+//            categoryNotFound(categoryId);
+        }
+
+        PostEntity postEntity = new PostEntity(post, userEntity, categoryEntity);
+        userEntity.getCreatedPosts().add(postEntity);
+        categoryEntity.getPosts().add(postEntity);
+
+        usersRepository.save(userEntity);
+        categoriesRepository.save(categoryEntity);
+
+    }
+
+    @Override
+    public void registerNewUser(User user) {
+        UserEntity userEntity = new UserEntity(user);
+
+        //TODO what todo when duplicate user ???
+//        if (userExists(user)) {
+//            throw new ResourceAlreadyExistsException("user " + user.getUserName());
+//        }
+        usersRepository.save(userEntity);
+    }
+
+    @Override
+    public void addCategoryToUserFollowingCategories(long userId, long categoryId) {
+        UserEntity userEntity = usersRepository.findOne(userId);
+        if (userEntity == null) {
+//            userNotFound(userId);
+        }
+        CategoryEntity categoryEntity = categoriesRepository.findOne(categoryId);
+        if (categoryEntity == null) {
+//            categoryNotFound(categoryId);
+        }
+        Set<CategoryEntity> categoryEntities = userEntity.getCategoriesFollowing();
+        categoryEntities.add(categoryEntity);
+        usersRepository.save(userEntity);
+    }
+}

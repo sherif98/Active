@@ -1,6 +1,6 @@
 package com.edu.active.dao.entities;
 
-import com.edu.active.controllers.dto.User;
+import com.edu.active.services.storage.model.User;
 
 import javax.persistence.*;
 import java.util.Set;

@@ -1,6 +1,6 @@
 package com.edu.active.controllers.exceptions;
 
-import com.edu.active.controllers.dto.Error;
+import com.edu.active.services.storage.model.Error;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -32,17 +32,6 @@ public class GlobalExceptionHandlingController {
         return new Error(exc.getMessage());
     }
 
-    public static void userNotFound(long userId) {
-        throw new ResourceNotFoundException("user " + userId);
-    }
-
-    public static void categoryNotFound(long categoryId) {
-        throw new ResourceNotFoundException("category  " + categoryId);
-    }
-
-    public static void postNotFound(long postId) {
-        throw new ResourceNotFoundException("post  " + postId);
-    }
 
     public static void invalidData(List<ObjectError> allErrors) {
         throw new InvalidDataException(allErrors);

@@ -1,4 +1,4 @@
-package com.edu.active.services;
+package com.edu.active.services.mail;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

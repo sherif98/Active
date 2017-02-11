@@ -1,4 +1,4 @@
-package com.edu.active.controllers.dto;
+package com.edu.active.services.storage.model;
 
 import com.edu.active.controllers.CategoriesController;
 import com.edu.active.dao.entities.CategoryEntity;

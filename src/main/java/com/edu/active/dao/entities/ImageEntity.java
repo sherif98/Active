@@ -1,6 +1,6 @@
 package com.edu.active.dao.entities;
 
-import com.edu.active.controllers.dto.Image;
+import com.edu.active.services.storage.model.Image;
 
 import javax.persistence.*;
 

@@ -1,4 +1,4 @@
-package com.edu.active.controllers.dto;
+package com.edu.active.services.storage.model;
 
 public class Error {
     private String message;

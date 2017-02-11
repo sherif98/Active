@@ -1,4 +1,4 @@
-package com.edu.active.controllers.dto;
+package com.edu.active.services.storage.model;
 
 import com.edu.active.controllers.PostsController;
 import com.edu.active.controllers.UserController;

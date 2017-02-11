@@ -1,6 +1,6 @@
-package com.edu.active.services;
+package com.edu.active.services.mail;
 
-import com.edu.active.controllers.dto.User;
+import com.edu.active.services.storage.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,17 +20,6 @@ public class EmailServiceImpl implements EmailService {
 
     private static final Logger log = LoggerFactory.getLogger(EmailServiceImpl.class);
 
-//    @Autowired
-//    VelocityEngine velocityEngine;
-
-//    public void sendEmail(User user) {
-//        SimpleMailMessage mailMessage = new SimpleMailMessage();
-//        mailMessage.setFrom("noreply.active@gmail.com");
-//        mailMessage.setTo(user.getEmail());
-//        mailMessage.setSubject("Registration");
-//        mailMessage.setText("Hello " + user.getUserName() + "\n Your registration is successfull");
-//        mailSender.send(mailMessage);
-//    }
 
     @Override
     @Async
