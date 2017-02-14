@@ -1,6 +1,7 @@
 package com.edu.active.services.storage.impl;
 
-import com.edu.active.controllers.exceptions.GlobalExceptionHandlingController;
+import com.edu.active.controllers.exceptions.ResourceNotFoundException;
+import com.edu.active.controllers.exceptions.ResourceType;
 import com.edu.active.dao.api.PostsRepository;
 import com.edu.active.dao.api.UsersRepository;
 import com.edu.active.dao.entities.CategoryEntity;
@@ -31,7 +32,7 @@ public class PostStorageServiceImpl implements PostStorageService {
     public Resource<Post> getpostById(long postId) {
         PostEntity postEntity = postsRepository.findOne(postId);
         if (postEntity == null) {
-            GlobalExceptionHandlingController.postNotFound(postId);
+            throw new ResourceNotFoundException(ResourceType.POST, postId);
         }
         Resource<Post> postResource = Post.getResource(postEntity);
         return postResource;
@@ -41,7 +42,7 @@ public class PostStorageServiceImpl implements PostStorageService {
     public Resource<Category> getPostCategory(long postId) {
         PostEntity postEntity = postsRepository.findOne(postId);
         if (postEntity == null) {
-            GlobalExceptionHandlingController.postNotFound(postId);
+            throw new ResourceNotFoundException(ResourceType.POST, postId);
         }
         CategoryEntity categoryEntity = postEntity.getCategory();
         Resource<Category> categoryResource = Category.getResource(categoryEntity);
@@ -52,7 +53,7 @@ public class PostStorageServiceImpl implements PostStorageService {
     public Page<Resource<User>> getUsersLikePost(long postId, Pageable pageable) {
         PostEntity postEntity = postsRepository.findOne(postId);
         if (postEntity == null) {
-            GlobalExceptionHandlingController.postNotFound(postId);
+            throw new ResourceNotFoundException(ResourceType.POST, postId);
         }
         Page<UserEntity> userEntityPage = usersRepository.findUsersByLikedPostsContaining(postEntity, pageable);
         return userEntityPage.map(User::getResource);
@@ -62,11 +63,11 @@ public class PostStorageServiceImpl implements PostStorageService {
     public void addPostToUserLikedPosts(long postId, long userId) {
         UserEntity userEntity = usersRepository.findOne(userId);
         if (userEntity == null) {
-            GlobalExceptionHandlingController.userNotFound(userId);
+            throw new ResourceNotFoundException(ResourceType.USER, userId);
         }
         PostEntity postEntity = postsRepository.findOne(postId);
         if (postEntity == null) {
-            GlobalExceptionHandlingController.postNotFound(postId);
+            throw new ResourceNotFoundException(ResourceType.POST, postId);
         }
         userEntity.getLikedPosts().add(postEntity);
         usersRepository.save(userEntity);

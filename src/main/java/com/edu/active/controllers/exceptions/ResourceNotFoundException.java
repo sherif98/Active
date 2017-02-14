@@ -2,13 +2,21 @@ package com.edu.active.controllers.exceptions;
 
 public class ResourceNotFoundException extends RuntimeException {
 
-    private String resourceName;
 
-    public ResourceNotFoundException(String resourceName) {
-        this.resourceName = resourceName;
+    private ResourceType resourceType;
+    private long resourceId;
+
+    public ResourceNotFoundException(ResourceType resourceType, long resourceId) {
+        super(resourceType.toString() + " " + resourceId + " Not Found");
+        this.resourceType = resourceType;
+        this.resourceId = resourceId;
     }
 
-    public String getResourceName() {
-        return resourceName;
+    public ResourceType getResourceType() {
+        return resourceType;
+    }
+
+    public long getResourceId() {
+        return resourceId;
     }
 }

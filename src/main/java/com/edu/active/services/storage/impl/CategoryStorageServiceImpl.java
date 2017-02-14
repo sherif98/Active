@@ -1,6 +1,7 @@
 package com.edu.active.services.storage.impl;
 
-import com.edu.active.controllers.exceptions.GlobalExceptionHandlingController;
+import com.edu.active.controllers.exceptions.ResourceNotFoundException;
+import com.edu.active.controllers.exceptions.ResourceType;
 import com.edu.active.dao.api.CategoriesRepository;
 import com.edu.active.dao.api.PostsRepository;
 import com.edu.active.dao.entities.CategoryEntity;
@@ -28,7 +29,7 @@ public class CategoryStorageServiceImpl implements CategoryStorageService {
     public Page<Resource<Post>> getPostsUnderCategory(long categoryId, Pageable pageable) {
         CategoryEntity categoryEntity = categoriesRepository.findOne(categoryId);
         if (categoryEntity == null) {
-            GlobalExceptionHandlingController.categoryNotFound(categoryId);
+            throw new ResourceNotFoundException(ResourceType.CATEGORY, categoryId);
         }
         Page<PostEntity> postEntityPage = postsRepository.findPostsByCategory(categoryEntity, pageable);
         return postEntityPage.map(Post::getResource);
@@ -44,7 +45,7 @@ public class CategoryStorageServiceImpl implements CategoryStorageService {
     public Resource<Category> getCategoryById(long id) {
         CategoryEntity categoryEntity = categoriesRepository.findOne(id);
         if (categoryEntity == null) {
-            GlobalExceptionHandlingController.categoryNotFound(id);
+            throw new ResourceNotFoundException(ResourceType.CATEGORY, id);
         }
         Resource<Category> categoryResource = Category.getResource(categoryEntity);
         return categoryResource;

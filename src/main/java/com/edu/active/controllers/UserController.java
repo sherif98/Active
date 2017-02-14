@@ -1,5 +1,6 @@
 package com.edu.active.controllers;
 
+import com.edu.active.controllers.exceptions.InvalidDataException;
 import com.edu.active.services.mail.EmailService;
 import com.edu.active.services.storage.api.UserStorageService;
 import com.edu.active.services.storage.model.Category;
@@ -18,8 +19,6 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-
-import static com.edu.active.controllers.exceptions.GlobalExceptionHandlingController.invalidData;
 
 @RestController
 @RequestMapping(value = "/user")
@@ -74,7 +73,7 @@ public class UserController {
     public void savePost(@RequestBody @Valid Post post,
                          Errors errors, @PathVariable long userId, @RequestParam(name = "category") long categoryId) {
         if (errors.hasErrors()) {
-            invalidData(errors.getAllErrors());
+            throw new InvalidDataException(errors.getAllErrors());
         }
         userStorageService.addPostToUserCreatedPosts(userId, post, categoryId);
     }
@@ -85,7 +84,7 @@ public class UserController {
     public void saveUser(@RequestBody @Valid User user, Errors errors) {
 
         if (errors.hasErrors()) {
-            invalidData(errors.getAllErrors());
+            throw new InvalidDataException(errors.getAllErrors());
         }
         userStorageService.registerNewUser(user);
         emailService.sendEmail(user);
