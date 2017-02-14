@@ -1,5 +1,6 @@
 package com.edu.active.services.storage.impl;
 
+import com.edu.active.controllers.exceptions.GlobalExceptionHandlingController;
 import com.edu.active.dao.api.CategoriesRepository;
 import com.edu.active.dao.api.PostsRepository;
 import com.edu.active.dao.entities.CategoryEntity;
@@ -13,8 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.Resource;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class CategoryStorageServiceImpl implements CategoryStorageService {
 
@@ -26,28 +25,28 @@ public class CategoryStorageServiceImpl implements CategoryStorageService {
     private PostsRepository postsRepository;
 
     @Override
-    public Optional<Page<Resource<Post>>> getPostsUnderCategory(long categoryId, Pageable pageable) {
+    public Page<Resource<Post>> getPostsUnderCategory(long categoryId, Pageable pageable) {
         CategoryEntity categoryEntity = categoriesRepository.findOne(categoryId);
         if (categoryEntity == null) {
-            return Optional.empty();
+            GlobalExceptionHandlingController.categoryNotFound(categoryId);
         }
         Page<PostEntity> postEntityPage = postsRepository.findPostsByCategory(categoryEntity, pageable);
-        return Optional.ofNullable(postEntityPage.map(Post::getResource));
+        return postEntityPage.map(Post::getResource);
     }
 
     @Override
-    public Optional<Page<Resource<Category>>> getAllCategories(Pageable pageable) {
+    public Page<Resource<Category>> getAllCategories(Pageable pageable) {
         Page<CategoryEntity> categoryEntities = categoriesRepository.findAll(pageable);
-        return Optional.ofNullable(categoryEntities.map(Category::getResource));
+        return categoryEntities.map(Category::getResource);
     }
 
     @Override
-    public Optional<Resource<Category>> getCategoryById(long id) {
+    public Resource<Category> getCategoryById(long id) {
         CategoryEntity categoryEntity = categoriesRepository.findOne(id);
         if (categoryEntity == null) {
-            return Optional.empty();
+            GlobalExceptionHandlingController.categoryNotFound(id);
         }
         Resource<Category> categoryResource = Category.getResource(categoryEntity);
-        return Optional.ofNullable(categoryResource);
+        return categoryResource;
     }
 }

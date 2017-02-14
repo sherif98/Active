@@ -9,22 +9,20 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.Resource;
 
-import java.util.Optional;
-
 //TODO add documentation
 
 public interface UserStorageService {
 
-    Optional<Resource<User>> getUserById(long userId);
+    Resource<User> getUserById(long userId);
 
-    Optional<Resource<Image>> getUserImage(long userId);
+    Resource<Image> getUserImage(long userId);
 
-    Optional<Page<Resource<Post>>> getUserPosts(long userId, Pageable pageable);
+    Page<Resource<Post>> getUserPosts(long userId, Pageable pageable);
 
-    Optional<Page<Resource<Category>>> getUserFollowingCategories(long userId, Pageable pageable);
+    Page<Resource<Category>> getUserFollowingCategories(long userId, Pageable pageable);
 
 
-    Optional<Page<Resource<Post>>> getUserLikedPosts(long userId, Pageable pageable);
+    Page<Resource<Post>> getUserLikedPosts(long userId, Pageable pageable);
 
 
     void addPostToUserCreatedPosts(long userId, Post post, long categoryId);

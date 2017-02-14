@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
@@ -39,47 +38,44 @@ public class UserController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public Resource<User> getUserById(@PathVariable long id) {
 
-        return userStorageService.getUserById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("user " + id));
+        return userStorageService.getUserById(id);
     }
 
     @RequestMapping(value = "/{userId}/image", method = RequestMethod.GET)
     public Resource<Image> getUserImage(@PathVariable long userId) {
-        return userStorageService.getUserImage(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("image " + userId));
+        return userStorageService.getUserImage(userId);
 
     }
 
     @RequestMapping(value = "/{id}/posts", method = RequestMethod.GET)
     public Page<Resource<Post>> getUserPosts(
             @PathVariable long id,
-            @PageableDefault(size = 10, page = 0) Pageable pageable) {
-        return userStorageService.getUserPosts(id, pageable)
-                .orElseThrow(() -> new ResourceNotFoundException("user " + id));
+            @PageableDefault Pageable pageable) {
+        return userStorageService.getUserPosts(id, pageable);
     }
 
 
     @RequestMapping(value = "/{id}/categories", method = RequestMethod.GET)
     public Page<Resource<Category>> categoriesFollowing(
-            @PathVariable long id, @PageableDefault(size = 10, page = 0) Pageable pageable) {
+            @PathVariable long id, @PageableDefault Pageable pageable) {
 
-        return userStorageService.getUserFollowingCategories(id, pageable)
-                .orElseThrow(() -> new ResourceNotFoundException("user " + id));
+        return userStorageService.getUserFollowingCategories(id, pageable);
     }
 
     @RequestMapping(value = "/{id}/likes", method = RequestMethod.GET)
     public Page<Resource<Post>> getLikedPosts(
-            @PathVariable long id, @PageableDefault(size = 10, page = 0) Pageable pageable) {
+            @PathVariable long id, @PageableDefault Pageable pageable) {
 
-        return userStorageService.getUserLikedPosts(id, pageable)
-                .orElseThrow(() -> new ResourceNotFoundException("user " + id));
+        return userStorageService.getUserLikedPosts(id, pageable);
     }
 
     @RequestMapping(value = "/{userId}/posts", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     public void savePost(@RequestBody @Valid Post post,
                          Errors errors, @PathVariable long userId, @RequestParam(name = "category") long categoryId) {
-
+        if (errors.hasErrors()) {
+            invalidData(errors.getAllErrors());
+        }
         userStorageService.addPostToUserCreatedPosts(userId, post, categoryId);
     }
 
@@ -100,8 +96,4 @@ public class UserController {
     public void followCategory(@PathVariable long userId, @RequestParam("categoryId") long categoryId) {
         userStorageService.addCategoryToUserFollowingCategories(userId, categoryId);
     }
-
-//    private boolean userExists(@RequestBody User user) {
-//        return usersRepository.findUserByUserName(user.getUserName()) != null;
-//    }
 }

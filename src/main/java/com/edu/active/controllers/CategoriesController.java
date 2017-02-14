@@ -6,7 +6,6 @@ import com.edu.active.services.storage.model.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.Resource;
 import org.springframework.web.bind.annotation.*;
@@ -22,24 +21,21 @@ public class CategoriesController {
 
 
     @RequestMapping(method = RequestMethod.GET)
-    public Page<Resource<Category>> getAllCategories(@PageableDefault(size = 10, page = 0) Pageable pageable) {
+    public Page<Resource<Category>> getAllCategories(@PageableDefault Pageable pageable) {
 
-        return categoryStorageService.getAllCategories(pageable)
-                .orElseThrow(ResourceNotFoundException::new);
+        return categoryStorageService.getAllCategories(pageable);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public Resource<Category> getCategoryById(@PathVariable long id) {
-        return categoryStorageService.getCategoryById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("category " + id));
+        return categoryStorageService.getCategoryById(id);
     }
 
 
     @RequestMapping(value = "/{id}/posts", method = RequestMethod.GET)
     public Page<Resource<Post>> getCategoryPostsById(
-            @PathVariable long id, @PageableDefault(size = 10, page = 0) Pageable pageable) {
+            @PathVariable long id, @PageableDefault Pageable pageable) {
 
-        return categoryStorageService.getPostsUnderCategory(id, pageable)
-                .orElseThrow(() -> new ResourceNotFoundException("category " + id));
+        return categoryStorageService.getPostsUnderCategory(id, pageable);
     }
 }

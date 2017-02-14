@@ -1,5 +1,7 @@
 package com.edu.active.services.storage.impl;
 
+import com.edu.active.controllers.exceptions.GlobalExceptionHandlingController;
+import com.edu.active.controllers.exceptions.ResourceAlreadyExistsException;
 import com.edu.active.dao.api.CategoriesRepository;
 import com.edu.active.dao.api.PostsRepository;
 import com.edu.active.dao.api.UsersRepository;
@@ -18,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.Resource;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -34,65 +35,64 @@ public class UserStorageServiceImpl implements UserStorageService {
     private PostsRepository postsRepository;
 
     @Override
-    public Optional<Resource<User>> getUserById(long userId) {
+    public Resource<User> getUserById(long userId) {
         UserEntity userEntity = usersRepository.findOne(userId);
         if (userEntity == null) {
-            return Optional.empty();
+            GlobalExceptionHandlingController.userNotFound(userId);
         }
-        return Optional.ofNullable(User.getResource(userEntity));
+        return User.getResource(userEntity);
     }
 
     @Override
-    public Optional<Resource<Image>> getUserImage(long userId) {
+    public Resource<Image> getUserImage(long userId) {
         UserEntity userEntity = usersRepository.findOne(userId);
         if (userEntity == null) {
-            return Optional.empty();
+            GlobalExceptionHandlingController.userNotFound(userId);
         }
         ImageEntity imageEntity = userEntity.getImageEntity();
         Resource<Image> imageResource = Image.getResource(imageEntity);
-        return Optional.ofNullable(imageResource);
+        return imageResource;
     }
 
     @Override
-    public Optional<Page<Resource<Post>>> getUserPosts(long userId, Pageable pageable) {
+    public Page<Resource<Post>> getUserPosts(long userId, Pageable pageable) {
         UserEntity userEntity = usersRepository.findOne(userId);
         if (userEntity == null) {
-            return Optional.empty();
+            GlobalExceptionHandlingController.userNotFound(userId);
         }
         Page<PostEntity> page = postsRepository.findPostsByOwnerUser(userEntity, pageable);
-        return Optional.ofNullable(page.map(Post::getResource));
+        return page.map(Post::getResource);
     }
 
     @Override
-    public Optional<Page<Resource<Category>>> getUserFollowingCategories(long userId, Pageable pageable) {
+    public Page<Resource<Category>> getUserFollowingCategories(long userId, Pageable pageable) {
         UserEntity userEntity = usersRepository.findOne(userId);
         if (userEntity == null) {
-            return Optional.empty();
+            GlobalExceptionHandlingController.userNotFound(userId);
         }
         Page<CategoryEntity> categoryEntityPage = categoriesRepository.findCategoriesByUsersFollowingCategoryContaining(userEntity, pageable);
-        return Optional.ofNullable(categoryEntityPage.map(Category::getResource));
+        return categoryEntityPage.map(Category::getResource);
     }
 
     @Override
-    public Optional<Page<Resource<Post>>> getUserLikedPosts(long userId, Pageable pageable) {
+    public Page<Resource<Post>> getUserLikedPosts(long userId, Pageable pageable) {
         UserEntity userEntity = usersRepository.findOne(userId);
         if (userEntity == null) {
-            Optional.empty();
+            GlobalExceptionHandlingController.userNotFound(userId);
         }
         Page<PostEntity> postEntityPage = postsRepository.findPostsByUsersLikePostContaining(userEntity, pageable);
-        return Optional.ofNullable(postEntityPage.map(Post::getResource));
+        return postEntityPage.map(Post::getResource);
     }
 
     @Override
     public void addPostToUserCreatedPosts(long userId, Post post, long categoryId) {
         UserEntity userEntity = usersRepository.findOne(userId);
         if (userEntity == null) {
-            //TODO
-//            userNotFound(userId);
+            GlobalExceptionHandlingController.userNotFound(userId);
         }
         CategoryEntity categoryEntity = categoriesRepository.findOne(categoryId);
         if (categoryEntity == null) {
-//            categoryNotFound(categoryId);
+            GlobalExceptionHandlingController.categoryNotFound(categoryId);
         }
 
         PostEntity postEntity = new PostEntity(post, userEntity, categoryEntity);
@@ -108,22 +108,26 @@ public class UserStorageServiceImpl implements UserStorageService {
     public void registerNewUser(User user) {
         UserEntity userEntity = new UserEntity(user);
 
-        //TODO what todo when duplicate user ???
-//        if (userExists(user)) {
-//            throw new ResourceAlreadyExistsException("user " + user.getUserName());
-//        }
+        if (userExists(userEntity)) {
+            throw new ResourceAlreadyExistsException("user already exists " + user.getUserName());
+        }
         usersRepository.save(userEntity);
+    }
+
+    private boolean userExists(UserEntity userEntity) {
+        return usersRepository.exists(userEntity.getId());
     }
 
     @Override
     public void addCategoryToUserFollowingCategories(long userId, long categoryId) {
         UserEntity userEntity = usersRepository.findOne(userId);
         if (userEntity == null) {
-//            userNotFound(userId);
+            GlobalExceptionHandlingController.userNotFound(userId);
+
         }
         CategoryEntity categoryEntity = categoriesRepository.findOne(categoryId);
         if (categoryEntity == null) {
-//            categoryNotFound(categoryId);
+            GlobalExceptionHandlingController.categoryNotFound(categoryId);
         }
         Set<CategoryEntity> categoryEntities = userEntity.getCategoriesFollowing();
         categoryEntities.add(categoryEntity);
